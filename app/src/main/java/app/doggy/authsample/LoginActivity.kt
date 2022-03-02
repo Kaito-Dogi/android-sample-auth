@@ -45,12 +45,16 @@ class LoginActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser
-        updateUI(currentUser)
+        if (currentUser != null) {
+            Log.d(GOOGLE_LOGIN, "Google sign in already success")
+            updateUI(currentUser)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         auth.signOut()
+        Log.d(GOOGLE_LOGIN, "Google sign out")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -75,10 +79,9 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Log.d(GOOGLE_LOGIN, "signInWithCredential:success")
                     val user = auth.currentUser
-                    updateUI(user)
+                    if (user != null) updateUI(user)
                 } else {
                     Log.w(GOOGLE_LOGIN, "signInWithCredential:failure", task.exception)
-                    updateUI(null)
                 }
             }
     }
@@ -88,8 +91,8 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    private fun updateUI(user: FirebaseUser?) {
-
+    private fun updateUI(user: FirebaseUser) {
+        binding.nameText.text = "${user.displayName}でログイン中です。"
     }
 
     companion object {
